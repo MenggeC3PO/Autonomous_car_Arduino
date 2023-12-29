@@ -170,12 +170,27 @@ void doDcSpeed(int spdL, int spdR) {
   }
 }
 float PID(float input) {
-  float errorDiff;
-  float output;
-  error = error * 0.7 + input * 0.3;
-  errorDiff = error - errorLast;
-  errorInte = constrain(error + errorInte, -50, 50);
-  output = ki * errorInte + kp * error + kd * errorDiff;
+  // Declare static variables to retain their values between function calls
+  static float errorLast = 0.0f;
+  static float errorInte = 0.0f;
+  
+  // Constants for PID coefficients
+  // Ensure that these are initialized properly in your actual code
+  const float kp = 1.0f; // Placeholder proportional gain
+  const float ki = 1.0f; // Placeholder integral gain
+  const float kd = 1.0f; // Placeholder derivative gain
+  
+  // Calculate error as a weighted average to smooth out the noise
+  float error = error * 0.7f + input * 0.3f;
+  
+  // Calculate the difference in error for the derivative term
+  float errorDiff = error - errorLast;
+  
+  // Update the integral term with error accumulation and constrain its value
+  // to prevent integral windup
+  errorInte = constrain(errorInte + error, -50.0f, 50.0f);
+  
+  float output = kp * error + ki * errorInte + kd * errorDiff;
   errorLast = error;
   return output;
 }
